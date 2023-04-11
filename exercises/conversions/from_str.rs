@@ -28,8 +28,6 @@ enum ParsePersonError {
     ParseInt(ParseIntError),
 }
 
-// I AM NOT DONE
-
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
 // 2. Split the given string on the commas present in it
@@ -46,6 +44,50 @@ enum ParsePersonError {
 impl FromStr for Person {
     type Err = ParsePersonError;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        if s.is_empty() {
+            Err(ParsePersonError::Empty)
+        } else {
+            let mut s = s.split(',');
+            // match s.next() {
+            //     Some(name) => {
+            //         if name.is_empty() {
+            //             Err(ParsePersonError::NoName)
+            //         } else {
+            //             match s.next() {
+            //                 Some(age) => match s.next() {
+            //                     None => match age.parse::<usize>() {
+            //                         Ok(age) => Ok(Person {
+            //                             name: name.to_string(),
+            //                             age: age,
+            //                         }),
+            //                         Err(e) => Err(ParsePersonError::ParseInt(e)),
+            //                     },
+            //                     _ => Err(ParsePersonError::BadLen),
+            //                 },
+            //                 _ => Err(ParsePersonError::BadLen),
+            //             }
+            //         }
+            //     }
+            //     _ => Err(ParsePersonError::BadLen),
+            // }
+            // Much more elegant
+            match (s.next(), s.next(), s.next()) {
+                (Some(name), Some(age), None) => {
+                    if name.is_empty() {
+                        Err(ParsePersonError::NoName)
+                    } else {
+                        match age.parse::<usize>() {
+                            Ok(age) => Ok(Person {
+                                name: name.to_string(),
+                                age: age,
+                            }),
+                            Err(e) => Err(ParsePersonError::ParseInt(e)),
+                        }
+                    }
+                }
+                _ => Err(ParsePersonError::BadLen),
+            }
+        }
     }
 }
 
